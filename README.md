@@ -1,2 +1,6 @@
 # experimental-simple-try
-a conminucation app that uses python socket libray
+
+A minimal communication app built with Python's socket library.
+
+Designed as a stupid prototype for learning and testing basic network communication.  
+No complex setup required — just run the server and client scripts.
