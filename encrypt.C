@@ -76,15 +76,15 @@ int encrypt(int data, int key,int valof){
         return st3_1[valof%4];
     }
 }
-int decrypt(int data, int key,int valof){
-    int n1=data%16;
+int decrypt(int *mattoenc1, int *mattoenc2, int key){
+    /*int n1=data%16;
     int n2=(data/16)%16;
     int n3=(data/256)%16;
     int n4=(data/4096)%16;
     int n5=(data/65536)%16;
     int n6=(data/1048576)%16;
     int n7=(data/16777216)%16;
-    int n8=(data/268435456)%16;
+    int n8=(data/268435456)%16;*/
     int k1=(key/1)%16;
     int k2=(key/16)%16;
     int k3=(key/256)%16;
@@ -93,8 +93,8 @@ int decrypt(int data, int key,int valof){
     int k6=(key/1048576)%16;
     int k7=(key/167772166)%16;
     int k8=(key/268435456)%16;
-    int mattoenc1[]={n1,n2,n3,n4};
-    int mattoenc2[]={n5,n6,n7,n8};
+    //int mattoenc1[4]=data1;
+    //int mattoenc2[4]=data2;
     int key1[]={k1,k2,k3,k4};
     int key2[]={k5,k6,k7,k8};
     //first stage
@@ -123,16 +123,20 @@ int decrypt(int data, int key,int valof){
         st3_1[ajkd]=matsub(st2_1,key2,ajkd); 
         st3_2[ajkd]=(maxmul(st2_2,unkey1,ajkd))/unkey1[4];
     }
-    if (valof>3){
-        return st3_2[valof%4];
-    }else {
-        return st3_1[valof%4];
-    }
+    int rslt=(st3_1[0])+(st3_1[1]*16)+(st3_1[2]*256)+(st3_1[3]*4096)+(st3_2[0]*65536)+(st3_2[1]*1048576)+(st3_2[2]*16777216)+(st3_2[3]*268435456);
+    return rslt;
 }
 int main(){
     int naud1[]={4,3,1,1};
     int naud2[]={7,2,9,3};
-    int cha=maxmul(naud1,naud2,3);
-    printf(" %d \n",cha);
+    int encrpted1[4];
+    int encrpted2[4];
+    for(int ajkd=0;ajkd<3;ajkd++){
+        encrpted1[ajkd]=encrypt(15,1351,ajkd);
+        encrpted2[ajkd]=encrypt(15,1351,ajkd+4);
+    }
+    int decr;
+    decr=decrypt(encrpted1,encrpted2,1351);
+    printf(" %d \n",decr);
     return 1;
 }
