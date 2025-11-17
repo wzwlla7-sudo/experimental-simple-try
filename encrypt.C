@@ -7,16 +7,30 @@ int maxmul(int *nums1,int *nums2,int nto){
     int resl[4]={nu1,nu2,nu3,nu4};
     return resl[nto];
 }
-int matinv(int *mat,nded){
+int matinv(int *mat,int nded){
     int det=mat[0]*mat[3]-mat[1]*mat[2];
     int n1=mat[3];
     int n2=-mat[1];
     int n3=-mat[2];
     int n4=mat[0];
-    int reus[]=[n1,n2,n3,n4,det];
+    int reus[]={n1,n2,n3,n4,det};
     return reus[nded];
 }
-int encrypt(int data, int key){
+int matadd(int *mat1,int *mat2,int nto){
+    int arr[4];
+    for (int jdu=0;jdu<3;jdu++){
+        arr[jdu]=mat1[jdu]+mat2[jdu];
+    }
+    return arr[nto];
+}
+int matsub(int *mat1,int *mat2,int nto){
+    int arr[4];
+    for (int jdu=0;jdu<3;jdu++){
+        arr[jdu]=mat1[jdu]-mat2[jdu];
+    }
+    return arr[nto];
+}
+int encrypt(int data, int key,int valof){
     int n1=data%16;
     int n2=(data/16)%16;
     int n3=(data/256)%16;
@@ -29,9 +43,91 @@ int encrypt(int data, int key){
     int k2=(key/16)%16;
     int k3=(key/256)%16;
     int k4=(key/4096)%16;
+    int k5=(key/65536)%16;
+    int k6=(key/1048576)%16;
+    int k7=(key/167772166)%16;
+    int k8=(key/268435456)%16;
+    int mattoenc1[]={n1,n2,n3,n4};
+    int mattoenc2[]={n5,n6,n7,n8};
+    int key1[]={k1,k2,k3,k4};
+    int key2[]={k5,k6,k7,k8};
+    //first stage
+    int st1_1[4];
+    int st1_2[4];
+    for (int ajkud=0;ajkud<3;ajkud++){
+        st1_1[matadd(mattoenc1,key1,ajkud)];
+        st1_2[maxmul(mattoenc2,key2,ajkud)];
+    }
+    int st2_1[4];
+    int st2_2[4];
+    for (int ajkud=0;ajkud<3;ajkud++){
+        st2_1[maxmul(st1_1,key2,ajkud)];
+        st2_2[matadd(st1_2,key1,ajkud)];
+    }
+    int st3_1[4];
+    int st3_2[4];
+    for (int ajkud=0;ajkud<3;ajkud++){
+        st3_1[ajkud]=st2_1[ajkud]^key;
+        st3_2[ajkud]=st2_2[ajkud]^key;
+    }
+    if (valof>3){
+        return st3_2[valof%4];
+    }else {
+        return st3_1[valof%4];
+    }
+}
+int decrypt(int data, int key,int valof){
+    int n1=data%16;
+    int n2=(data/16)%16;
+    int n3=(data/256)%16;
+    int n4=(data/4096)%16;
+    int n5=(data/65536)%16;
+    int n6=(data/1048576)%16;
+    int n7=(data/16777216)%16;
+    int n8=(data/268435456)%16;
+    int k1=(key/1)%16;
+    int k2=(key/16)%16;
+    int k3=(key/256)%16;
+    int k4=(key/4096)%16;
+    int k5=(key/65536)%16;
+    int k6=(key/1048576)%16;
+    int k7=(key/167772166)%16;
+    int k8=(key/268435456)%16;
+    int mattoenc1[]={n1,n2,n3,n4};
+    int mattoenc2[]={n5,n6,n7,n8};
+    int key1[]={k1,k2,k3,k4};
+    int key2[]={k5,k6,k7,k8};
+    //first stage
+    int st1_1[4];
+    int st1_2[4];
+    int st2_1[4];
+    int st2_2[4];
+    for (int ajkd=0;ajkd<3;ajkd++){
+        st2_1[ajkd]=mattoenc1[ajkd]^key;
+        st2_2[ajkd]=mattoenc2[ajkd]^key;
+    }
+    int unkey1[5];
+    int unkey2[5];
 
-    return 0;
-return 0;
+    for (int ajkud=0;ajkud<4;ajkud++){
+        unkey1[ajkud]=matinv(key1,ajkud);
+        unkey2[ajkud]=matinv(key2,ajkud);
+    }
+    for (int ajkd=0;ajkd<3;ajkd++){
+        st2_1[ajkd]=(maxmul(st1_1,unkey2,ajkd))/unkey2[4];
+        st2_2[ajkd]=matsub(st1_2,key1,ajkd);
+    }
+    int st3_1[4];
+    int st3_2[4];
+    for (int ajkd=0;ajkd<3;ajkd++){
+        st3_1[ajkd]=matsub(st2_1,key2,ajkd); 
+        st3_2[ajkd]=(maxmul(st2_2,unkey1,ajkd))/unkey1[4];
+    }
+    if (valof>3){
+        return st3_2[valof%4];
+    }else {
+        return st3_1[valof%4];
+    }
 }
 int main(){
     int naud1[]={4,3,1,1};
