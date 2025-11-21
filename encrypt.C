@@ -33,7 +33,7 @@ int matsub(int *mat1,int *mat2,int nto){
     }
     return arr[nto];
 }
-int encrypt(int data, int key,int valof){
+int encode(int data,int valof){
     int n1=data%16;
     int n2=(data/16)%16;
     int n3=(data/256)%16;
@@ -42,44 +42,19 @@ int encrypt(int data, int key,int valof){
     int n6=(data/1048576)%16;
     int n7=(data/16777216)%16;
     int n8=(data/268435456)%16;
-    int k1=(key/1)%16;
-    int k2=(key/16)%16;
-    int k3=(key/256)%16;
-    int k4=(key/4096)%16;
-    int k5=(key/65536)%16;
-    int k6=(key/1048576)%16;
-    int k7=(key/16777216)%16;
-    int k8=(key/268435456)%16;
     int mattoenc1[]={n1,n2,n3,n4};
     int mattoenc2[]={n5,n6,n7,n8};
-    int key1[]={k1+8,k3+8,k5+8,k7+3};
-    int key2[]={k2+3,k4+3,k6+2,k8+1};
-    //first stage
-    int st1_1[4];
-    int st1_2[4];
-    for (int ajkud=0;ajkud<4;ajkud++){
-        st1_1[ajkud]=matadd(mattoenc1,key1,ajkud);
-        st1_2[ajkud]=maxmul(mattoenc2,key2,ajkud);
-    }
-    int st2_1[4];
-    int st2_2[4];
-    for (int ajkud=0;ajkud<4;ajkud++){
-        st2_1[ajkud]=maxmul(st1_1,key2,ajkud);
-        st2_2[ajkud]=matadd(st1_2,key1,ajkud);
-    }
-    int st3_1[4];
-    int st3_2[4];
-    for (int ajkud=0;ajkud<4;ajkud++){
-        st3_1[ajkud]=st2_1[ajkud]^(key%16);
-        st3_2[ajkud]=st2_2[ajkud]^(key%16);
-    }
     if (valof>3){
-        return st3_2[valof%4];
-    }else {
-        return st3_1[valof%4];
+        return mattoenc2[valof%4];
+    }else{
+        return mattoenc1[valof%4];
     }
 }
-int decrypt(int *mattoenc1, int *mattoenc2, int key){
+int decode(int *st3_1,int *st3_2){
+    int rslt=(st3_1[0])+(st3_1[1]*16)+(st3_1[2]*256)+(st3_1[3]*4096)+((st3_2[0]%16)*65536)+((st3_2[1]%16)*1048576)+((st3_2[2]%16)*16777216)+((st3_2[3]%16)*268435456);
+    return rslt;
+}
+int encrypt1(int *mattoenc1,int *mattoenc2, int key,int valof){
     /*int n1=data%16;
     int n2=(data/16)%16;
     int n3=(data/256)%16;
@@ -96,16 +71,75 @@ int decrypt(int *mattoenc1, int *mattoenc2, int key){
     int k6=(key/1048576)%16;
     int k7=(key/16777216)%16;
     int k8=(key/268435456)%16;
-    int key1[]={k1+8,k3+8,k5+8,k7+3};
-    int key2[]={k2+3,k4+3,k6+2,k8+1};
+    //int mattoenc1[]={n1,n2,n3,n4};
+    //int mattoenc2[]={n5,n6,n7,n8};
+    int key1[]={k1+1,k3+1,k5+1,k7+1};
+    int key2[]={k2+1,k4+1,k6+1,k8+1};
+    //first stage
+    
+    int st1_1[4];
+    int st1_2[4];
+    for (int ajkud=0;ajkud<4;ajkud++){
+        st1_1[ajkud]=matadd(mattoenc1,key1,ajkud);
+        st1_2[ajkud]=maxmul(mattoenc2,key2,ajkud);
+    }
+    int st2_1[4];
+    int st2_2[4];
+    for (int ajkud=0;ajkud<4;ajkud++){
+        st2_1[ajkud]=maxmul(st1_1,key2,ajkud);
+        st2_2[ajkud]=matadd(st1_2,key1,ajkud);
+    }
+    int st3_1[4];
+    int st3_2[4];
+    for (int ajkud=0;ajkud<4;ajkud++){
+        st3_1[ajkud]=st2_1[ajkud]^(key);
+        st3_2[ajkud]=st2_2[ajkud]^(key);
+    }
+    int st4_1[4];
+    int st4_2[4];
+    for (int ajkd=0;ajkd<4;ajkd++){
+        st4_1[ajkd]=st3_1[(ajkd+(key%4))%4]; 
+        st4_2[ajkd]=st3_2[(ajkd+(key%4))%4];
+    }
+    if (valof>3){
+        return st4_2[valof%4];
+    }else {
+        return st4_1[valof%4];
+    }
+}
+int decrypt1(int *mattoenc1, int *mattoenc2, int key,int valof){
+    /*int n1=data%16;
+    int n2=(data/16)%16;
+    int n3=(data/256)%16;
+    int n4=(data/4096)%16;
+    int n5=(data/65536)%16;
+    int n6=(data/1048576)%16;
+    int n7=(data/16777216)%16;
+    int n8=(data/268435456)%16;*/
+    int k1=(key/1)%16;
+    int k2=(key/16)%16;
+    int k3=(key/256)%16;
+    int k4=(key/4096)%16;
+    int k5=(key/65536)%16;
+    int k6=(key/1048576)%16;
+    int k7=(key/16777216)%16;
+    int k8=(key/268435456)%16;
+    int key1[]={k1+1,k3+1,k5+1,k7+1};
+    int key2[]={k2+1,k4+1,k6+1,k8+1};
     //first stage
     int st1_1[4];
     int st1_2[4];
     int st2_1[4];
     int st2_2[4];
+    int st0_1[4];
+    int st0_2[4];
     for (int ajkd=0;ajkd<4;ajkd++){
-        st1_1[ajkd]=mattoenc1[ajkd]^(key%16);
-        st1_2[ajkd]=mattoenc2[ajkd]^(key%16);
+        st0_1[(ajkd+(key%4))%4]=mattoenc1[ajkd]; 
+        st0_2[(ajkd+(key%4))%4]=mattoenc2[ajkd];
+    }
+    for (int ajkd=0;ajkd<4;ajkd++){
+        st1_1[ajkd]=st0_1[ajkd]^(key);
+        st1_2[ajkd]=st0_2[ajkd]^(key);
         
     }
     int unkey1[5];
@@ -126,20 +160,92 @@ int decrypt(int *mattoenc1, int *mattoenc2, int key){
         st3_1[ajkd]=matsub(st2_1,key1,ajkd); 
         st3_2[ajkd]=(maxmul(st2_2,unkey2,ajkd))/unkey2[4];
     }
-    int rslt=(st3_1[0])+(st3_1[1]*16)+(st3_1[2]*256)+(st3_1[3]*4096)+((st3_2[0]%16)*65536)+((st3_2[1]%16)*1048576)+((st3_2[2]%16)*16777216)+((st3_2[3]%16)*268435456);
-    return rslt;
+    if(valof>3){
+        return st3_2[valof%4];
+    }else{
+        return st3_1[valof%4];
+    }
 }
+int checkky(int *keys){
+    for(int ajkd=0;ajkd<2;ajkd++){
+    int key=keys[ajkd];
+    int k1=(key/1)%16;
+    int k2=(key/16)%16;
+    int k3=(key/256)%16;
+    int k4=(key/4096)%16;
+    int k5=(key/65536)%16;
+    int k6=(key/1048576)%16;
+    int k7=(key/16777216)%16;
+    int k8=(key/268435456)%16;
+    int key1[]={k1+1,k3+1,k5+1,k7+1};
+    int key2[]={k2+1,k4+1,k6+1,k8+1};
+    int da=matinv(key1,4);
+    int db=matinv(key2,4);
+    if ((da==0) or (db==0)){
+        printf("\n no ! no ! no ! stooop !! \n ");
+        return 3221225620;
+    }
+    }
+    return 1;
+}
+int encrypt(int tocrypt, int *keys,int valof){
+    int mattoenc1[4];
+    int mattoenc2[4];
+    for(int ajkd=0;ajkd<4;ajkd++){
+        mattoenc1[ajkd]=encode(tocrypt,ajkd);
+        mattoenc2[ajkd]=encode(tocrypt,ajkd+4);
+    }
+    int rasu1[4];
+    int rasu2[4];
+    int rsu1[4];
+    int rsu2[4];
+    int vali=checkky(keys);
+    if (vali==3221225620){
+        printf("\n no , be careful  careful now ! \n");
+        return 0;
+    }
+    for(int ajkd=0;ajkd<4;ajkd++){
+        rsu1[ajkd]=encrypt1(mattoenc1,mattoenc2,keys[0],ajkd);
+        rsu2[ajkd]=encrypt1(mattoenc1,mattoenc2,keys[0],ajkd+4);
+    }
+    for(int ajkd=0;ajkd<4;ajkd++){
+        rasu1[ajkd]=encrypt1(rsu1,rsu2,keys[1],ajkd);
+        rasu2[ajkd]=encrypt1(rsu1,rsu2,keys[1],ajkd+4);
+    }
+    if(valof>3){
+        return rasu2[valof%4];
+    }else{
+        return rasu1[valof%4];
+    }
+}
+int decrypt(int *mattoenc1, int *mattoenc2, int *keys){
+    int rasu1[4];
+    int rasu2[4];
+    int rsu1[4];
+    int rsu2[4];
+    for(int ajkd=0;ajkd<4;ajkd++){
+        rsu1[ajkd]=decrypt1(mattoenc1,mattoenc2,keys[1],ajkd);
+        rsu2[ajkd]=decrypt1(mattoenc1,mattoenc2,keys[1],ajkd+4);
+    }
+    for(int ajkd=0;ajkd<4;ajkd++){
+        rasu1[ajkd]=decrypt1(rsu1,rsu2,keys[0],ajkd);
+        rasu2[ajkd]=decrypt1(rsu1,rsu2,keys[0],ajkd+4);
+    }
+    int decr=decode(rasu1,rasu2);
+    return decr;
+}
+
 int main(){
     int naud1[]={4,3,1,1};
     int naud2[]={7,2,9,3};
-    int encrpted1[4];
-    int encrpted2[4];
-    for(int ajkd=0;ajkd<4;ajkd++){
-        encrpted1[ajkd]=encrypt(159,139575678,ajkd);
-        encrpted2[ajkd]=encrypt(159,139575678,ajkd+4);
-        
+    int encrptd1[4];
+    int encrptd2[4];
+    int keyses[]={1448,7394};
+     for(int ajkd=0;ajkd<4;ajkd++){
+        encrptd1[ajkd]=encrypt(1934,keyses,ajkd);
+        encrptd2[ajkd]=encrypt(1934,keyses,ajkd+4);
     }
-    int decr=decrypt(encrpted1,encrpted2,139575678);
+    int decr = decrypt(encrptd1,encrptd2,keyses);
     printf(" the result is : %d ",decr);
     return 1;
 }
