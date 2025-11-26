@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 int maxmul(int *nums1,int *nums2,int nto){
     int nu1=nums1[0]*nums2[0]+nums1[1]*nums2[2];
     int nu2=nums1[0]*nums2[1]+nums1[1]*nums2[3];
@@ -263,16 +264,13 @@ for (int axu=0;axu<leen;axu++){
 fclose(fp);
 }
 void readthat(int *wheretoput,int bufsiz){
-    int lau[64];
     char xi[64];
     FILE *deta =fopen("todec.txt","r");
     for(int axu=0;axu<bufsiz;axu++){
         fgets(xi,64,deta);
-        lau[axu]=atoi(xi);
-        wheretoput[axu]=lau[axu];
+        wheretoput[axu]=atoi(xi);
     }
     fclose(deta);
-    
 }
 void setthos(int *whattopu,int sizeo){
     FILE *nums =fopen("dected.txt","w");
@@ -282,7 +280,8 @@ void setthos(int *whattopu,int sizeo){
     fclose(nums);
 }
 int main(){
-    /*int onelen=countthis(0);
+    while(1==1){
+    int onelen=countthis(0);
     int arruru[onelen];
     int reslte[onelen*8];
     readthis(arruru,onelen);
@@ -301,23 +300,36 @@ int main(){
     reslte[(axu*8)+7]=encrpted2[3];
     }
     int leen1=sizeof(reslte)/sizeof(reslte[0]);
-    settham(reslte,leen1);*/
-    int onelen=countthis(1);
+    settham(reslte,leen1);
+
+    //stop 
+
+
+     onelen=countthis(1);
     int arru[onelen];
-    int reslte[onelen/8];
+    int reslte1[(onelen/8)];
+    readthat(arru,onelen);
     int decrypted;
-    int keys[2]={15469,98576};
     int are1[4];
     int are2[4];
+    
     for(int axu=0;axu<(onelen/8) ;axu++){
-    are1[0]=reslte[(axu*8)];
-    are1[1]=reslte[(axu*8)+1];
-    are1[2]=reslte[(axu*8)+2];
-    are1[3]=reslte[(axu*8)+3];
-    are2[0]=reslte[(axu*8)+4];
-    are2[1]=reslte[(axu*8)+5];
-    are2[2]=reslte[(axu*8)+6];
-    are2[3]=reslte[(axu*8)+7];
+    are1[0]=arru[(axu*8)];
+    are1[1]=arru[(axu*8)+1];
+    are1[2]=arru[(axu*8)+2];
+    are1[3]=arru[(axu*8)+3];
+    are2[0]=arru[(axu*8)+4];
+    are2[1]=arru[(axu*8)+5];
+    are2[2]=arru[(axu*8)+6];
+    are2[3]=arru[(axu*8)+7];
+    decrypted=decrypt(are1,are2,keys);
+    reslte1[axu]=decrypted;
     }
-    return 0;
+    int aju=sizeof(reslte1)/sizeof(reslte1[0]);
+    setthos(reslte1,aju);
+    
+    Sleep(850);
+    printf("working ... \n");
+}
+return 0;
 }
