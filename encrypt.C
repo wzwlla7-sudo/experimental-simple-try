@@ -234,7 +234,46 @@ int decrypt(int *mattoenc1, int *mattoenc2, int *keys){
     int decr=decode(rasu1,rasu2);
     return decr;
 }
-
+void readthis(int *wheretoput,int bufsiz){
+    int lau[64];
+    char xi[64];
+    FILE *deta =fopen("toen1.txt","r");
+    for(int axu=0;axu<bufsiz;axu++){
+        fgets(xi,64,deta);
+        lau[axu]=atoi(xi);
+        wheretoput[axu]=lau[axu];
+        //printf("result is : %d \n",lau[axu]);
+    }
+    fclose(deta);
+    
+}
+int countthis() {
+    FILE *fp=fopen("toen1.txt","r");
+    int count = 0, tmp;
+    while (fscanf(fp, "%d", &tmp) == 1) count++;
+    rewind(fp);
+    fclose(fp);
+    return count;
+}
+void settham(int *encrpteded,int leen){
+FILE *fp=fopen("towri1.txt","w");
+for (int axu=0;axu<leen;axu++){
+    fprintf(fp,"%d\n",encrpteded[axu]);
+}
+fclose(fp);
+}
+int main(){
+int ad;
+ad=countthis();
+int ajd[ad];
+readthis(ajd,ad);
+for(int dau=0;dau<ad;dau++)
+{
+printf(" %d \n ",ajd[dau]);
+}
+settham(ajd,ad);
+    return 0;
+}
 int main(){
     int naud1[]={4,3,1,1};
     int naud2[]={7,2,9,3};
