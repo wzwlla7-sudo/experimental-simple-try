@@ -2,6 +2,7 @@ from socket import *
 from tkinter import *
 from time import sleep
 from threading import Thread
+from executabledecoding import encryp,decryp
 tk1=Tk()
 tk1['bg']="white"
 tk1.state("zoomed")
@@ -31,25 +32,24 @@ def  reciving():
     global recvdltr
     while True:
         nau=client.recv(4096)
-        recvdltr=nau.decode('utf-8')
+        recvdltr=decryp(nau)
 th2=Thread(target=reciving)
 th2.start()
-awnsr=Label(tk,text=recvdltr,font=("",55),bg="white",fg="black")
-awnsr.place(relx=0,rely=0.4,relwidth=1,relheight=0.2)
+
 messg=Entry(tk,font=("",55),bg="white",fg="black",bd=4)
 messg.place(relx=0,rely=0.6,relwidth=1,relheight=0.2)
 def executee():
     while True:
         #print(recvdltr)
-        awnsr['text']=recvdltr
+        awnsr=Label(tk,text=recvdltr,font=("",25),bg="white",fg="black")
+        awnsr.place(relx=0,rely=0.4,relwidth=1,relheight=0.2)
         tk.update()
         sleep(1)
 def send():
     na=messg.get()
-    client.send(na.encode('utf-8'))
+    client.send(encryp(na))
 b1=Button(tk,font=("",55),bg="white",fg="black",bd=4,command=send,text="send")
 b1.place(relx=0,rely=0.8,relwidth=1,relheight=0.2)
 th3=Thread(target=executee)
 th3.start()
 tk.mainloop()
-
